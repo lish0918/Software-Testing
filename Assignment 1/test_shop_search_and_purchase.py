@@ -1,10 +1,6 @@
 from pytest import fixture, raises
 from online_shopping_cart.shop.shop_search_and_purchase import search_and_purchase_product
 
-"""
-IMPORTANT: This file requires pytest-mock is installed: `pip install pytest-mock`.
-"""
-
 
 class TestSearchAndPurchaseProduct:
     @fixture
