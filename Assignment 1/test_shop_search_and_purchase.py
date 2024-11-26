@@ -35,7 +35,6 @@ class TestSearchAndPurchaseProduct:
         user_input_stub.side_effect = [1, 'y']
         with raises(AttributeError) as excinfo:
             search_and_purchase_product()
-
         assert "'int' object has no attribute 'lower'" in str(excinfo.value)
 
     # Search for a product using the float
@@ -43,7 +42,6 @@ class TestSearchAndPurchaseProduct:
         user_input_stub.side_effect = [1.5, 'y']
         with raises(AttributeError) as excinfo:
             search_and_purchase_product()
-
         assert "'float' object has no attribute 'lower'" in str(excinfo.value)
 
     # Search for a product using the list
@@ -51,9 +49,35 @@ class TestSearchAndPurchaseProduct:
         user_input_stub.side_effect = [[1, 2, 3], 'y']
         with raises(AttributeError) as excinfo:
             search_and_purchase_product()
-
         assert "'list' object has no attribute 'lower'" in str(excinfo.value)
 
+    # Checkout phase using the int
+    def test_checkout_using_int(self, login_stub, user_input_stub, capsys):
+        user_input_stub.side_effect = ['apple', 1]
+        with raises(AttributeError) as excinfo:
+            search_and_purchase_product()
+        out, err = capsys.readouterr()
+        assert "['Product', 'Price', 'Units']" in out
+        assert "'int' object has no attribute 'lower'" in str(excinfo.value)
+
+    # Checkout phase using the float
+    def test_checkout_using_float(self, login_stub, user_input_stub, capsys):
+        user_input_stub.side_effect = ['apple', 1.5]
+        with raises(AttributeError) as excinfo:
+            search_and_purchase_product()
+        out, err = capsys.readouterr()
+        assert "['Product', 'Price', 'Units']" in out
+        assert "'float' object has no attribute 'lower'" in str(excinfo.value)
+
+    # Checkout phase using the list
+
+    def test_checkout_using_list(self, login_stub, user_input_stub, capsys):
+        user_input_stub.side_effect = ['apple', [1]]
+        with raises(AttributeError) as excinfo:
+            search_and_purchase_product()
+        out, err = capsys.readouterr()
+        assert "['Product', 'Price', 'Units']" in out
+        assert "'list' object has no attribute 'lower'" in str(excinfo.value)
 
     # Search for a product using wrong string
     def test_search_product_using_wrong_string(self, login_stub, user_input_stub, display_filtered_stub, checkout_stub):

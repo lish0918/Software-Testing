@@ -56,6 +56,15 @@ class TestDisplayFilteredTable:
         out, err = capsys.readouterr()
         assert out == "\n['Product', 'Price', 'Units']\n"
 
+    # Search target - None
+    def test_none_search_target(self, copy_csv_file, capsys):
+        display_filtered_table(copy_csv_file, None)
+        out, err = capsys.readouterr()
+        assert "['Product', 'Price', 'Units']" in out
+        assert "['Juice', '3', '8']" in out
+        assert "['Peanut Butter', '3', '6']" in out
+        assert "['Laptop', '800', '1']" in out
+
     # Filename input - empty string
     def test_empty_string_input(copy_csv_file):
         with raises(FileNotFoundError) as excinfo:
@@ -121,7 +130,7 @@ class TestDisplayFilteredTable:
 
     # Search target - special characters
     def test_search_target_special_characters(self, copy_csv_file, capsys):
-        display_filtered_table(copy_csv_file, "aPp@e")
+        display_filtered_table(copy_csv_file, "aPp@le")
         out, err = capsys.readouterr()
         assert out == "\n['Product', 'Price', 'Units']\n"
 
