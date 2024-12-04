@@ -15,19 +15,19 @@ class TestDisplayFilteredTable:
         os.remove(temp_file_path) # delete the temporary file after the test
 
     # Invalid input type - int
-    def test_int_input(copy_csv_file):
+    def test_int_input(self, copy_csv_file):
         with raises(OSError) as excinfo:
             display_filtered_table(123, "apple")
         assert "[WinError 6] 句柄无效。" in str(excinfo.value)
 
     # Invalid input type - float
-    def test_float_input(copy_csv_file):
+    def test_float_input(self, copy_csv_file):
         with raises(TypeError) as excinfo:
             display_filtered_table(1.0, "apple")
         assert "expected str, bytes or os.PathLike object, not float" in str(excinfo.value)
 
     # Invalid input type - list
-    def test_list_input(copy_csv_file):
+    def test_list_input(self, copy_csv_file):
         with raises(TypeError) as excinfo:
             display_filtered_table([1,2,3], "apple")
         assert "expected str, bytes or os.PathLike object, not list" in str(excinfo.value)

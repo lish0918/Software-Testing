@@ -16,25 +16,25 @@ class TestDisplayCsvAsTable:
 
 
     # Invalid input type - int
-    def test_int_input(copy_csv_file):
+    def test_int_input(self, copy_csv_file):
         with raises(OSError) as excinfo:
             display_csv_as_table(123)
         assert "[WinError 6] 句柄无效。" in str(excinfo.value)
 
     # Invalid input type - float
-    def test_float_input(copy_csv_file):
+    def test_float_input(self, copy_csv_file):
         with raises(TypeError) as excinfo:
             display_csv_as_table(1.0)
         assert "expected str, bytes or os.PathLike object, not float" in str(excinfo.value)
 
     # Invalid input type - list
-    def test_list_input(copy_csv_file):
+    def test_list_input(self, copy_csv_file):
         with raises(TypeError) as excinfo:
             display_csv_as_table([1,2,3])
         assert "expected str, bytes or os.PathLike object, not list" in str(excinfo.value)
 
     # Filename input - empty string
-    def test_empty_string_input(copy_csv_file):
+    def test_empty_string_input(self, copy_csv_file):
         with raises(FileNotFoundError) as excinfo:
             display_csv_as_table("")
         assert "No such file or directory" in str(excinfo.value)
