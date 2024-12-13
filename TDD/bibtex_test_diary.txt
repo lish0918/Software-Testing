@@ -1,0 +1,284 @@
+RED
+
+Test code.
+
+import bibtex
+import pytest
+
+@pytest.fixture
+def setup_data():
+    return {
+        'simple_author_1': "Smith",
+        'simple_author_2': "Jones",
+        'author_1': "John Smith",
+        'author_2': "Bob Jones",
+        'author_3': "Justin Kenneth Pearson",
+        'surname_first_1': "Pearson, Justin Kenneth",
+        'surname_first_2': "Van Hentenryck, Pascal",
+        'multiple_authors_1': "Pearson, Justin and Jones, Bob"
+    }
+
+def test_author1(setup_data):
+    # Test only surnames.
+    (Surname, FirstNames) = bibtex.extract_author(setup_data['simple_author_1'])
+    assert (Surname, FirstNames) == ('Smith', '')
+    (Surname, FirstNames) = bibtex.extract_author(setup_data['simple_author_2'])
+    assert (Surname, FirstNames) == ('Jones', '')
+
+===========================failed error==================================
+
+test_bibtex.py:17 (test_author_1)
+setup_data = {'author_1': 'John Smith', 'author_2': 'Bob Jones', 'author_3': 'Justin Kenneth Pearson', 'multiple_authors_1': 'Pearson, Justin and Jones, Bob', ...}
+
+    def test_author_1(setup_data):
+        #Test only surnames.
+>       (Surname, FirstNames) = bibtex.extract_author(setup_data['simple_author_1'])
+E       AttributeError: module 'bibtex' has no attribute 'extract_author'
+
+=============================================================
+
+GREEN
+
+--To pass test_author1, write these code.--
+Write a function that can handle the author only contains surname.
+
+def extract_author(name):
+    return name, ''
+
+==================================================================
+
+test_bibtex.py::test_author_1 PASSED                                     [100%]
+
+==================================================================
+
+
+RED
+
+add test 2 to the test to test simple first name author.
+
+def test_author2(setup_data):
+    # Test simple first name author.
+    (Surname, First) = bibtex.extract_author(setup_data['author_1'])
+    assert (Surname, First) == ("Smith", "John")
+    (Surname, First) = bibtex.extract_author(setup_data['author_2'])
+    assert (Surname, First) == ("Jones", "Bob")
+
+
+===========================failed error==================================
+
+test_bibtex.py:24 (test_author_2)
+('John Smith', '') != ('Smith', 'John')
+
+预期:('Smith', 'John')
+实际:('John Smith', '')
+
+setup_data = {'author_1': 'John Smith', 'author_2': 'Bob Jones', 'author_3': 'Justin Kenneth Pearson', 'multiple_authors_1': 'Pearson, Justin and Jones, Bob', ...}
+
+    def test_author_2(setup_data):
+    	#Test simple firstname author.
+    	(Surname, First) = bibtex.extract_author(setup_data['author_1'])
+>   	assert (Surname, First) == ("Smith", "John")
+E    AssertionError: assert ('John Smith', '') == ('Smith', 'John')
+E
+E      At index 0 diff: 'John Smith' != 'Smith'
+E
+E      Full diff:
+E        (
+E      -     'Smith',
+E      +     'John Smith',
+E      ?      +++++
+E      -     'John',
+E      ?      ----
+E      +     '',
+E        )
+
+=============================================================
+
+GREEN
+
+Add a "if" statement to judge the author string,
+when there is a space between surname and forename,
+using .split() to split the string and return the first word as forename, second word as firstname
+
+def extract_author(name):
+    if ' ' in name:
+        firstname, surname = name.split(' ', 1)
+    else:
+        return name, ''
+    return surname, firstname
+
+==================================================================
+
+test_bibtex.py::test_author_1 PASSED                                     [50%]
+test_bibtex.py::test_author_2 PASSED                                     [100%]
+
+==================================================================
+
+RED
+
+add test 3 to test if first name includes multiple words.
+
+def test_author3(setup_data):
+    (Surname, First) = bibtex.extract_author(setup_data['author_3'])
+    assert (Surname, First) == ("Pearson", "Justin Kenneth")
+
+===========================failed error==================================
+
+test_bibtex.py:32 (test_author_3)
+('Kenneth Pearson', 'Justin') != ('Pearson', 'Justin Kenneth')
+
+预期:('Pearson', 'Justin Kenneth')
+实际:('Kenneth Pearson', 'Justin')
+
+setup_data = {'author_1': 'John Smith', 'author_2': 'Bob Jones', 'author_3': 'Justin Kenneth Pearson', 'multiple_authors_1': 'Pearson, Justin and Jones, Bob', ...}
+
+    def test_author_3(setup_data):
+        #Test surname, firstname for Author 3
+    	(Surname, First) = bibtex.extract_author(setup_data['author_3'])
+>   	assert (Surname, First) == ("Pearson", "Justin Kenneth")
+E    AssertionError: assert ('Kenneth Pearson', 'Justin') == ('Pearson', 'Justin Kenneth')
+E
+E      At index 0 diff: 'Kenneth Pearson' != 'Pearson'
+E
+E      Full diff:
+E        (
+E      -     'Pearson',
+E      +     'Kenneth Pearson',
+E      ?      ++++++++
+E      -     'Justin Kenneth',
+E      ?            --------
+E      +     'Justin',
+E        )
+
+==================================================================
+
+GREEN
+
+Replacing split with rsplit method,
+let the rightest one be the surname, and the rest are forenames.
+
+def extract_author(name):
+    if ' ' in name:
+        firstname, surname = name.rsplit(' ', 1)
+    else:
+        return name, ''
+    return surname, firstname
+
+============================= test session starts =============================
+
+test_bibtex.py::test_author1 PASSED                                        [ 33%]
+test_bibtex.py::test_author2 PASSED                                        [ 66%]
+test_bibtex.py::test_author3 PASSED                                        [100%]
+
+============================================================
+
+RED
+
+add test 4 to test if surname is first while surname and forenames are separated by ","
+
+def test_surname_first(setup_data):
+    (Surname, First) = bibtex.extract_author(setup_data['surname_first_1'])
+    assert (Surname, First) == ("Pearson", "Justin Kenneth")
+    (Surname, First) = bibtex.extract_author(setup_data['surname_first_2'])
+    assert (Surname, First) == ("Van Hentenryck", "Pascal")
+
+
+===========================failed error==================================
+
+test_bibtex.py:37 (test_surname_first)
+('Kenneth', 'Pearson, Justin') != ('Pearson', 'Justin Kenneth')
+
+预期:('Pearson', 'Justin Kenneth')
+实际:('Kenneth', 'Pearson, Justin')
+
+setup_data = {'author_1': 'John Smith', 'author_2': 'Bob Jones', 'author_3': 'Justin Kenneth Pearson', 'multiple_authors_1': 'Pearson, Justin and Jones, Bob', ...}
+
+    def test_surname_first(setup_data):
+        #Test surname, FirstName for surname_first_1 and surname_first_2
+    	(Surname, First) = bibtex.extract_author(setup_data['surname_first_1'])
+>   	assert (Surname, First) == ("Pearson", "Justin Kenneth")
+E    AssertionError: assert ('Kenneth', 'Pearson, Justin') == ('Pearson', 'Justin Kenneth')
+E
+E      At index 0 diff: 'Kenneth' != 'Pearson'
+E
+E      Full diff:
+E        (
+E      -     'Pearson',
+E      -     'Justin Kenneth',
+E      ?      -------
+E      +     'Kenneth',
+E      +     'Pearson, Justin',
+E        )
+
+===========================r==================================
+
+
+GREEN
+
+Add one more judgement in "if" statement,
+if there is a "," in the name, the word before is surname and after is firstname.
+And we should judge comma first,
+because if multiple firstname, the space exists.
+
+def extract_author(name):
+    if ',' in name:
+        surname, firstname = name.split(', ', 1)
+    elif ' ' in name:
+        firstname, surname = name.rsplit(' ', 1)
+    else:
+        return name, ''
+    return surname, firstname
+
+
+==========================================================
+
+test_bibtex.py::test_author1 PASSED                                        [ 25%]
+test_bibtex.py::test_author2 PASSED                                        [ 50%]
+test_bibtex.py::test_author3 PASSED                                        [ 75%]
+test_bibtex.py::test_surname_first PASSED                                  [100%]
+
+============================================================
+
+
+RED
+
+add test 5 to test if multiple authors.
+
+def test_multiple_authors(setup_data):
+    Authors = bibtex.extract_authors(setup_data['multiple_authors_1'])
+    assert Authors[0] == ('Pearson', 'Justin')
+    assert Authors[1] == ('Jones', 'Bob')
+
+===========================failed error==================================
+
+test_bibtex.py:45 (test_multiple_authors)
+setup_data = {'author_1': 'John Smith', 'author_2': 'Bob Jones', 'author_3': 'Justin Kenneth Pearson', 'multiple_authors_1': 'Pearson, Justin and Jones, Bob', ...}
+
+    def test_multiple_authors(setup_data):
+        #Test Surname and Firstname for multiple authors
+>   	Authors = bibtex.extract_authors(setup_data['multiple_authors_1'])
+E    AttributeError: module 'bibtex' has no attribute 'extract_authors'. Did you mean: 'extract_author'?
+
+=============================================================
+
+GREEN
+
+Add a function extract_authors,
+which can recognise "and" and split the string by "and",
+then convey the string list to the function extract_author.
+
+def extract_authors(name):
+    name_list = name.split(' and ')
+    return [extract_author(name) for name in name_list]
+
+
+==========================================================
+
+
+test_bibtex.py::test_author1 PASSED                                        [ 20%]
+test_bibtex.py::test_author2 PASSED                                        [ 40%]
+test_bibtex.py::test_author3 PASSED                                        [ 60%]
+test_bibtex.py::test_surname_first PASSED                                  [ 80%]
+test_bibtex.py::test_multiple_authors PASSED                               [100%]
+
+============================================================
